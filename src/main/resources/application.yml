@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: demo
+
+# 日志配置
+logging:
+  # 日志级别：TRACE < DEBUG < INFO < WARN < ERROR
+  level:
+    root: INFO                    # 全局默认级别
+  # 文件输出（同时保留控制台输出）
+  file:
+    name: logs/demo.log           # 日志文件路径，相对项目运行目录
+  # 日志格式
+  pattern:
+    # 控制台输出格式：时间 | 线程 | 级别 | 类名(最多50字符) | 消息
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    # 文件输出格式（与控制台保持一致）
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  # Logback 滚动策略（按大小+时间归档）
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB         # 单个日志文件最大 10MB，超出后滚动
+      max-history: 30             # 保留最近 30 天的历史日志
+      total-size-cap: 1GB           # 所有归档日志总大小上限

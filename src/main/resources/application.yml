@@ -6,6 +6,14 @@ spring:
     url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: root
+  flyway:
+    enabled: false
+    # 默认 classpath:db/migration，显式声明便于维护
+    locations: classpath:db/migration
+    # 已有旧库但未跑过 Flyway 时，以当前库为基线而不报错
+    baseline-on-migrate: true
+    # 迁移脚本校验（生产环境建议保持 true）
+    validate-on-migrate: true
 
 # MyBatis-Plus 配置
 mybatis-plus:

@@ -63,6 +63,17 @@
             <artifactId>mysql-connector-j</artifactId>
         </dependency>
 
+        <!-- Flyway：版本由 Spring Boot 2.7.6 BOM 管理（8.5.13） -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <!-- Flyway 8.x 起 MySQL 支持拆到独立模块，使用 MySQL 时必须引入 -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
         <!-- MyBatis-Plus 代码生成器 -->
         <dependency>
             <groupId>com.baomidou</groupId>

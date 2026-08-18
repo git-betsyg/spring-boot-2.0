@@ -13,6 +13,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.7.6</spring-boot.version>
         <mybatis-plus.version>3.5.17</mybatis-plus.version>
+        <hutool.version>5.8.47</hutool.version>
     </properties>
     <repositories>
 		<repository>
@@ -102,6 +103,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Hutool 5.x：兼容 Java 8（6.x 需 Java 11+） -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

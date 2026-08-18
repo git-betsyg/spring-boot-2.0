@@ -47,3 +47,7 @@ logging:
       max-file-size: 10MB         # 单个日志文件最大 10MB，超出后滚动
       max-history: 30             # 保留最近 30 天的历史日志
       total-size-cap: 1GB           # 所有归档日志总大小上限
+
+jwt:
+  private.key: classpath:app.key
+  public.key: classpath:app.pub

@@ -1,5 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.configuration.OpenApiConfig;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +22,9 @@ public class TokenController {
     JwtEncoder encoder;
 
     @PostMapping("/token")
+    @SecurityRequirements({
+            @SecurityRequirement(name = OpenApiConfig.BASIC_SCHEME)
+    })
     public String token(Authentication authentication) {
         Instant now = Instant.now();
         long expiry = 36000L;

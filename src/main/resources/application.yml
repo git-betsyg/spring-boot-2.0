@@ -51,3 +51,15 @@ logging:
 jwt:
   private.key: classpath:app.key
   public.key: classpath:app.pub
+
+# Actuator + Swagger 集成
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,mappings
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    persist-authorization: true

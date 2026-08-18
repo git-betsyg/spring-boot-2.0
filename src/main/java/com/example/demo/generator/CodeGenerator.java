@@ -34,6 +34,7 @@ public class CodeGenerator {
         FastAutoGenerator.create(URL, USERNAME, PASSWORD)
                 .globalConfig(builder -> builder
                         .author(AUTHOR)
+                        .enableSpringdoc() // 生成 OpenAPI 3 注解，配合 springdoc-openapi
                         .commentDate("yyyy-MM-dd")
                         .outputDir(Paths.get(projectPath, "src", "main", "java").toString())
                 )

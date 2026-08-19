@@ -68,6 +68,12 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>${mybatis-plus.version}</version>
         </dependency>
+        <!-- 3.5.9+ 分页插件依赖 jsqlparser；Java 8 使用 4.9 分支 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+            <version>${mybatis-plus.version}</version>
+        </dependency>
 
         <!-- MySQL -->
         <dependency>

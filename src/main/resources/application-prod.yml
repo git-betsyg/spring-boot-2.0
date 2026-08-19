@@ -1,0 +1,45 @@
+# ============================================================
+# 生产环境（profile: prod）
+# 适用场景：线上部署
+# 启动：--spring.profiles.active=prod
+# 必填环境变量：DB_URL、DB_USERNAME、DB_PASSWORD
+# 可选环境变量：LOG_PATH（默认 logs/demo.log）
+# ============================================================
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 生产库连接信息必须通过环境变量注入，禁止硬编码
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  flyway:
+    # 生产环境开启迁移，部署时自动执行未运行的脚本
+    enabled: true
+    locations: classpath:db/migration
+    # 生产库应已有完整基线，不自动 baseline，避免误将旧库当作初始状态
+    baseline-on-migrate: false
+    # 生产环境强烈建议保持 true，防止脚本被篡改
+    validate-on-migrate: true
+
+logging:
+  level:
+    root: WARN                   # 全局 WARN，减少第三方框架噪音
+    com.example.demo: INFO       # 业务日志保留 INFO
+  file:
+    name: ${LOG_PATH:logs/demo.log}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 60            # 生产保留 60 天
+      total-size-cap: 5GB
+
+# Actuator：生产环境最小暴露，避免泄露 env、beans 等敏感信息
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

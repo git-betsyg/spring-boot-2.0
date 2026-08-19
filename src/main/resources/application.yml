@@ -1,65 +1,37 @@
+# ============================================================
+# 公共配置（各环境共享，环境差异见 application-{profile}.yml）
+# 激活方式：--spring.profiles.active=dev|test|prod
+#           或环境变量 SPRING_PROFILES_ACTIVE
+# ============================================================
+
 spring:
   application:
     name: demo
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-  flyway:
-    enabled: false
-    # 默认 classpath:db/migration，显式声明便于维护
-    locations: classpath:db/migration
-    # 已有旧库但未跑过 Flyway 时，以当前库为基线而不报错
-    baseline-on-migrate: true
-    # 迁移脚本校验（生产环境建议保持 true）
-    validate-on-migrate: true
+  profiles:
+    # 默认激活开发环境；部署时通过启动参数或环境变量覆盖
+    active: dev
 
 # MyBatis-Plus 配置
 mybatis-plus:
   configuration:
-    # 下划线转驼峰：user_name -> userName（MyBatis-Plus 默认 true，可省略）
+    # 下划线转驼峰：user_name -> userName（MyBatis-Plus 默认 true，显式声明便于维护）
     map-underscore-to-camel-case: true
   global-config:
     db-config:
       # 主键策略：auto=数据库自增（默认 assign_id 雪花算法）
       id-type: auto
-  # Mapper XML 扫描路径，对应 src/main/resources/mapper/（默认值，可省略）
+  # Mapper XML 扫描路径，对应 src/main/resources/mapper/
   mapper-locations: classpath*:/mapper/**/*.xml
 
-# 日志配置
-logging:
-  # 日志级别：TRACE < DEBUG < INFO < WARN < ERROR
-  level:
-    root: INFO                    # 全局默认级别
-  # 文件输出（同时保留控制台输出）
-  file:
-    name: logs/demo.log           # 日志文件路径，相对项目运行目录
-  # 日志格式
-  pattern:
-    # 控制台输出格式：时间 | 线程 | 级别 | 类名(最多50字符) | 消息
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
-    # 文件输出格式（与控制台保持一致）
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
-  # Logback 滚动策略（按大小+时间归档）
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB         # 单个日志文件最大 10MB，超出后滚动
-      max-history: 30             # 保留最近 30 天的历史日志
-      total-size-cap: 1GB           # 所有归档日志总大小上限
-
+# JWT 密钥（RSA 公私钥，classpath 下 app.key / app.pub）
 jwt:
   private.key: classpath:app.key
   public.key: classpath:app.pub
 
-# Actuator + Swagger 集成
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,env,beans,mappings
-
+# SpringDoc OpenAPI + Swagger UI
 springdoc:
+  # 在 Swagger UI 中展示 Actuator 端点
   show-actuator: true
   swagger-ui:
+    # 刷新页面后保留 Authorization 头，避免重复登录
     persist-authorization: true

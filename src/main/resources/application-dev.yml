@@ -1,0 +1,49 @@
+# ============================================================
+# 开发环境（profile: dev）
+# 适用场景：本地开发调试
+# 启动：默认即 dev，无需额外参数
+# ============================================================
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 本地 MySQL，库名 demo
+    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  flyway:
+    # 开发环境关闭自动迁移，避免误改本地库结构；需要时可手动开启
+    enabled: false
+    # 迁移脚本目录，默认 classpath:db/migration
+    locations: classpath:db/migration
+    # 已有旧库但未跑过 Flyway 时，以当前库为基线而不报错
+    baseline-on-migrate: true
+    # 迁移脚本校验
+    validate-on-migrate: true
+
+# 日志配置
+logging:
+  level:
+    # 日志级别：TRACE < DEBUG < INFO < WARN < ERROR
+    root: INFO
+    # 业务包开启 DEBUG，便于排查 SQL 与接口逻辑
+    com.example.demo: DEBUG
+  file:
+    # 日志文件路径，相对项目运行目录
+    name: logs/demo.log
+  pattern:
+    # 控制台输出格式：时间 | 线程 | 级别 | 类名(最多50字符) | 消息
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB       # 单文件超过 10MB 后滚动
+      max-history: 30           # 保留最近 30 天归档
+      total-size-cap: 1GB         # 所有归档日志总大小上限
+
+# Actuator 监控端点（开发环境开放较多，便于调试）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,mappings

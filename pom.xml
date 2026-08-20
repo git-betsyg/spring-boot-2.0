@@ -126,6 +126,16 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Spring Cache + Caffeine（版本由 Spring Boot 2.7.6 BOM 管理） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
         <!-- Hutool 5.x：兼容 Java 8（6.x 需 Java 11+） -->
         <dependency>
             <groupId>cn.hutool</groupId>

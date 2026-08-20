@@ -10,6 +10,14 @@ spring:
   profiles:
     # 默认激活开发环境；部署时通过启动参数或环境变量覆盖
     active: dev
+  cache:
+    # 显式指定 Caffeine，避免 classpath 上其它 cache 库干扰自动检测
+    type: caffeine
+    # 预创建缓存区（未声明的 cache name 在运行时首次使用时会失败）
+    cache-names: demo,users
+    caffeine:
+      # 全局默认：最多 500 条，写入后 10 分钟过期（官方 spec 语法）
+      spec: maximumSize=500,expireAfterWrite=10m
 
 # MyBatis-Plus 配置
 mybatis-plus:

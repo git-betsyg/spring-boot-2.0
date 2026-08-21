@@ -35,6 +35,13 @@ mybatis-plus:
 jwt:
   private.key: classpath:app.key
   public.key: classpath:app.pub
+  # Access Token 有效期（秒），默认 15 分钟
+  access-token-expiry: 900
+  # Refresh Token 有效期（秒），默认 7 天
+  refresh-token-expiry: 604800
+  refresh-token-cookie-name: refresh_token
+  # 生产环境请在 application-prod.yml 中设为 true（HTTPS）
+  cookie-secure: false
 
 # SpringDoc OpenAPI + Swagger UI
 springdoc:

@@ -3,6 +3,7 @@
 # 适用场景：线上部署
 # 启动：--spring.profiles.active=prod
 # 必填环境变量：DB_URL、DB_USERNAME、DB_PASSWORD
+# DB_URL 示例：jdbc:mysql://host:3306/demo
 # 可选环境变量：LOG_PATH（默认 logs/demo.log）
 # ============================================================
 
@@ -36,6 +37,9 @@ logging:
       max-file-size: 50MB
       max-history: 60            # 生产保留 60 天
       total-size-cap: 5GB
+
+jwt:
+  cookie-secure: true
 
 # Actuator：生产环境最小暴露，避免泄露 env、beans 等敏感信息
 management:

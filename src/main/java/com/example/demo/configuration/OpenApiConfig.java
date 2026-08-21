@@ -19,7 +19,11 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Demo API")
-                        .description("先用 Basic Auth 调用 POST /token 获取 JWT，再在 Authorize 中填入 Bearer Token。"))
+                        .description("登录：POST /token（Basic Auth）获取短期 Access Token，Refresh Token 写入 HttpOnly Cookie。"
+                                + "刷新：POST /token/refresh（自动携带 Cookie）。"
+                                + "业务 API 也可直接使用 Basic Auth 或 Bearer JWT。"
+                                + "前端跨域调用时须开启 credentials（如 fetch 的 credentials: 'include'、axios 的 withCredentials: true），"
+                                + "否则浏览器不会发送 Cookie，刷新 Token 将失败；后端已配置 Access-Control-Allow-Credentials。"))
                 .components(new Components()
                         .addSecuritySchemes(BEARER_SCHEME, new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)

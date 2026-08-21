@@ -48,7 +48,9 @@ public class SecurityConfig {
                         .antMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/token/refresh",
+                                "/token/logout"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

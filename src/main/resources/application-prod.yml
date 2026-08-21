@@ -2,9 +2,9 @@
 # 生产环境（profile: prod）
 # 适用场景：线上部署
 # 启动：--spring.profiles.active=prod
-# 必填环境变量：DB_URL、DB_USERNAME、DB_PASSWORD
+# 必填环境变量：DB_URL、DB_USERNAME、DB_PASSWORD、REDIS_HOST
 # DB_URL 示例：jdbc:mysql://host:3306/demo
-# 可选环境变量：LOG_PATH（默认 logs/demo.log）
+# 可选环境变量：REDIS_PORT（默认 6379）、REDIS_PASSWORD、REDIS_DATABASE（默认 0）、LOG_PATH（默认 logs/demo.log）
 # ============================================================
 
 spring:
@@ -22,6 +22,18 @@ spring:
     baseline-on-migrate: false
     # 生产环境强烈建议保持 true，防止脚本被篡改
     validate-on-migrate: true
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: ${REDIS_DATABASE:0}
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 32
+        max-idle: 16
+        min-idle: 4
+        max-wait: 3000ms
 
 logging:
   level:

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,9 +23,9 @@ public class ControllerResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         // response是ResponseVo类型的不进行包装
-        return !(returnType.getParameterType().isAssignableFrom(ResponseVo.class)
+        return !ResponseVo.class.isAssignableFrom(returnType.getParameterType())
                 // 有NotControllerResponseAdvice注解的不进行包装
-                || returnType.hasMethodAnnotation(NotControllerResponseAdvice.class));
+                && !returnType.hasMethodAnnotation(NotControllerResponseAdvice.class);
     }
 
     @Override
@@ -32,12 +33,16 @@ public class ControllerResponseAdvice implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   ServerHttpRequest request, ServerHttpResponse response) {
-        // String类型不能直接包装，需要进行处理
-        if (returnType.getGenericParameterType().equals(String.class)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            // 将数据包装在ResponseVo中转换为json进行返回
-            return objectMapper.writeValueAsString(new ResponseVo(body));
+        if (body instanceof ResponseVo) {
+            return body;
         }
-        return new ResponseVo(body);
+        ResponseVo responseVo = new ResponseVo(body);
+        // String 返回类型会走 StringHttpMessageConverter，必须先序列化成 JSON 字符串
+        if (StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)
+                || String.class.isAssignableFrom(returnType.getParameterType())) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(responseVo);
+        }
+        return responseVo;
     }
 }

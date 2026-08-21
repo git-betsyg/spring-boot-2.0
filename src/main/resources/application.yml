@@ -11,13 +11,18 @@ spring:
     # 默认激活开发环境；部署时通过启动参数或环境变量覆盖
     active: dev
   cache:
-    # 显式指定 Caffeine，避免 classpath 上其它 cache 库干扰自动检测
-    type: caffeine
-    # 预创建缓存区（未声明的 cache name 在运行时首次使用时会失败）
+    # 显式指定 Redis，避免 classpath 上其它 cache 库干扰自动检测
+    type: redis
+    # 预创建缓存区（Redis 在启动时创建对应 cache）
     cache-names: demo,users
-    caffeine:
-      # 全局默认：最多 500 条，写入后 10 分钟过期（官方 spec 语法）
-      spec: maximumSize=500,expireAfterWrite=10m
+    redis:
+      # 全局默认 TTL（users 区在 RedisConfig 中单独设为 5 分钟）
+      time-to-live: 10m
+      # 业务前缀，避免多应用共用 Redis 时 key 冲突
+      key-prefix: "demo:cache:"
+      use-key-prefix: true
+      # 不缓存 null，防止穿透后大量空值占内存
+      cache-null-values: false
 
 # MyBatis-Plus 配置
 mybatis-plus:

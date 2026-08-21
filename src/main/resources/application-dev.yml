@@ -20,6 +20,18 @@ spring:
     baseline-on-migrate: true
     # 迁移脚本校验
     validate-on-migrate: true
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 2
+        max-wait: 3000ms
 
 # 日志配置
 logging:

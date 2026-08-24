@@ -4,6 +4,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.example.demo.common.ResponseVo;
 import com.example.demo.enums.ExceptionCode;
 import com.example.demo.exception.APIException;
+import com.example.demo.service.I18nMessageService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
@@ -15,13 +17,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice(basePackages = "com.example.demo")
 @Slf4j
+@RequiredArgsConstructor
 public class ControllerExceptionAdvice {
+
+    private final I18nMessageService i18nMessageService;
 
     // 捕获 Exception
     @ExceptionHandler(Exception.class)
     public ResponseVo exceptionHandler(Exception e) {
         log.error(e.getMessage(), e);
-        return new ResponseVo(ExceptionCode.EXCEPTION_ERROR.getErrorCode(), e.getMessage());
+        String message = i18nMessageService.getMessage(ExceptionCode.EXCEPTION_ERROR.getErrorMessage());
+        return new ResponseVo(ExceptionCode.EXCEPTION_ERROR.getErrorCode(), message);
     }
 
     // 捕获 @Validated 校验异常

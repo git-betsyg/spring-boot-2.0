@@ -2,6 +2,7 @@ package com.example.demo.security;
 
 import com.example.demo.enums.APIExceptionCode;
 import com.example.demo.exception.APIException;
+import com.example.demo.service.I18nMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class RefreshTokenService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final I18nMessageService i18nMessageService;
 
     @Value("${jwt.refresh-token-expiry:604800}")
     private long refreshTokenExpirySeconds;
@@ -51,16 +53,18 @@ public class RefreshTokenService {
                 "SELECT username, expires_at FROM refresh_tokens WHERE token = ?",
                 rs -> {
                     if (!rs.next()) {
-                        throw new APIException(APIExceptionCode.REFRESH_TOKEN_INVALID.getErrorCode(),
-                                APIExceptionCode.REFRESH_TOKEN_INVALID.getErrorMessage());
+                        APIExceptionCode code = APIExceptionCode.REFRESH_TOKEN_INVALID;
+                        throw new APIException(code.getErrorCode(),
+                                i18nMessageService.getMessage(code.getErrorMessage()));
                     }
 
                     String username = rs.getString("username");
                     Instant expiresAt = rs.getTimestamp("expires_at").toInstant();
                     if (expiresAt.isBefore(Instant.now())) {
                         jdbcTemplate.update("DELETE FROM refresh_tokens WHERE token = ?", token);
-                        throw new APIException(APIExceptionCode.REFRESH_TOKEN_EXPIRED.getErrorCode(),
-                                APIExceptionCode.REFRESH_TOKEN_EXPIRED.getErrorMessage());
+                        APIExceptionCode code = APIExceptionCode.REFRESH_TOKEN_EXPIRED;
+                        throw new APIException(code.getErrorCode(),
+                                i18nMessageService.getMessage(code.getErrorMessage()));
                     }
 
                     jdbcTemplate.update("DELETE FROM refresh_tokens WHERE token = ?", token);

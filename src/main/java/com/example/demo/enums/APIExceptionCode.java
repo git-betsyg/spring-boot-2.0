@@ -10,9 +10,9 @@ import lombok.Getter;
 @Getter
 public enum APIExceptionCode implements ErrorCode {
 
-    REFRESH_TOKEN_MISSING(1001, "缺少 Refresh Token"),
-    REFRESH_TOKEN_INVALID(1002, "Refresh Token 无效"),
-    REFRESH_TOKEN_EXPIRED(1003, "Refresh Token 已过期");
+    REFRESH_TOKEN_MISSING(1001, "error.api.refresh_token_missing"),
+    REFRESH_TOKEN_INVALID(1002, "error.api.refresh_token_invalid"),
+    REFRESH_TOKEN_EXPIRED(1003, "error.api.refresh_token_expired");
 
     private final int errorCode;
     private final String errorMessage;

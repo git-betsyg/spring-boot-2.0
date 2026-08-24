@@ -6,6 +6,7 @@ import com.example.demo.enums.APIExceptionCode;
 import com.example.demo.exception.APIException;
 import com.example.demo.security.AccessTokenService;
 import com.example.demo.security.RefreshTokenService;
+import com.example.demo.service.I18nMessageService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class TokenController {
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
     private final UserDetailsService userDetailsService;
+    private final I18nMessageService i18nMessageService;
 
     /**
      * 登录：Basic Auth 校验通过后，返回短期 Access Token，Refresh Token 写入 HttpOnly Cookie。
@@ -47,8 +49,9 @@ public class TokenController {
             @CookieValue(name = "${jwt.refresh-token-cookie-name:refresh_token}", required = false) String refreshToken,
             HttpServletResponse response) {
         if (refreshToken == null || refreshToken.isEmpty()) {
-            throw new APIException(APIExceptionCode.REFRESH_TOKEN_MISSING.getErrorCode(),
-                    APIExceptionCode.REFRESH_TOKEN_MISSING.getErrorMessage());
+            APIExceptionCode code = APIExceptionCode.REFRESH_TOKEN_MISSING;
+            throw new APIException(code.getErrorCode(),
+                    i18nMessageService.getMessage(code.getErrorMessage()));
         }
 
         RefreshTokenService.RotateResult result = refreshTokenService.rotate(refreshToken);

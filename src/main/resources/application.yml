@@ -7,6 +7,10 @@
 spring:
   application:
     name: demo
+  messages:
+    basename: i18n/messages,i18n/ValidationMessages
+    encoding: UTF-8
+    fallback-to-system-locale: false
   profiles:
     # 默认激活开发环境；部署时通过启动参数或环境变量覆盖
     active: dev

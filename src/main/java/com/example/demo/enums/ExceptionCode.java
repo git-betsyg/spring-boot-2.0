@@ -9,9 +9,9 @@ import lombok.Getter;
 @Getter
 public enum ExceptionCode implements ErrorCode {
 
-    EXCEPTION_ERROR(500, "服务器错误"),
+    EXCEPTION_ERROR(500, "error.server.internal"),
     // @Validated 校验异常
-    BINDEXCEPTION_ERROR(400, "请求错误");
+    BINDEXCEPTION_ERROR(400, "error.request.invalid");
 
     // 错误类型代码
     private final int errorCode;

@@ -1,7 +1,7 @@
 package com.example.demo.constant;
 
 /**
- * Spring Cache 缓存区名称，与 application.yml 中 spring.cache.cache-names 保持一致。
+ * Spring Cache 缓存区名称
  */
 public final class CacheNames {
 

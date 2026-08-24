@@ -13,8 +13,6 @@ spring:
   cache:
     # 显式指定 Redis，避免 classpath 上其它 cache 库干扰自动检测
     type: redis
-    # 预创建缓存区（Redis 在启动时创建对应 cache）
-    cache-names: demo,users
     redis:
       # 全局默认 TTL（users 区在 RedisConfig 中单独设为 5 分钟）
       time-to-live: 10m

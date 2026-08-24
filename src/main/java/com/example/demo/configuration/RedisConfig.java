@@ -1,6 +1,7 @@
 package com.example.demo.configuration;
 
 import com.example.demo.constant.CacheNames;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,10 +35,10 @@ public class RedisConfig {
         return template;
     }
 
-    /** {@code @Cacheable} 默认缓存规则，TTL 10 分钟 */
+    /** {@code @Cacheable} 默认缓存规则，读取 {@code spring.cache.redis} */
     @Bean
-    public RedisCacheConfiguration redisCacheConfiguration() {
-        return baseCacheConfig(Duration.ofMinutes(10));
+    public RedisCacheConfiguration redisCacheConfiguration(CacheProperties cacheProperties) {
+        return baseCacheConfig(cacheProperties.getRedis());
     }
 
     /** 按 cache name 覆盖 TTL，如 users 设为 5 分钟 */
@@ -49,14 +50,26 @@ public class RedisConfig {
                 .withCacheConfiguration(CacheNames.USERS, redisCacheConfiguration.entryTtl(Duration.ofMinutes(5)));
     }
 
-    private static RedisCacheConfiguration baseCacheConfig(Duration ttl) {
+    private static RedisCacheConfiguration baseCacheConfig(CacheProperties.Redis redisProperties) {
         GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
-        return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(ttl)
+        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair
                         .fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(jsonSerializer))
-                .disableCachingNullValues();
+                        .fromSerializer(jsonSerializer));
+
+        if (redisProperties.getTimeToLive() != null) {
+            config = config.entryTtl(redisProperties.getTimeToLive());
+        }
+        if (redisProperties.getKeyPrefix() != null) {
+            config = config.prefixCacheNameWith(redisProperties.getKeyPrefix());
+        }
+        if (!redisProperties.isCacheNullValues()) {
+            config = config.disableCachingNullValues();
+        }
+        if (!redisProperties.isUseKeyPrefix()) {
+            config = config.disableKeyPrefix();
+        }
+        return config;
     }
 }

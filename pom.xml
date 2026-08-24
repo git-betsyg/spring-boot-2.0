@@ -147,6 +147,12 @@
             <version>3.18.0</version>
         </dependency>
 
+        <!-- RabbitMQ（版本由 Spring Boot 2.7.6 BOM 管理，对应 Spring AMQP 2.4.x） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
         <!-- Hutool 5.x：兼容 Java 8（6.x 需 Java 11+） -->
         <dependency>
             <groupId>cn.hutool</groupId>

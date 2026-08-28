@@ -25,6 +25,13 @@ spring:
       use-key-prefix: true
       # 不缓存 null，防止穿透后大量空值占内存
       cache-null-values: false
+  batch:
+    job:
+      # Web 应用主流做法：启动时不自动执行 Job，改由 HTTP 接口或命令行触发
+      enabled: false
+    jdbc:
+      # MySQL 等非内嵌库需显式初始化 BATCH_* 元数据表（Spring Boot 2.7 howto 9.4）
+      initialize-schema: always
   rabbitmq:
     # 消费者：失败自动重试，重试耗尽后不再 requeue（避免 poison message 死循环）
     listener:

@@ -147,6 +147,12 @@
             <version>3.18.0</version>
         </dependency>
 
+        <!-- Spring Batch（版本由 Spring Boot 2.7.6 BOM 管理，对应 Spring Batch 4.3.x） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
+        </dependency>
+
         <!-- RabbitMQ（版本由 Spring Boot 2.7.6 BOM 管理，对应 Spring AMQP 2.4.x） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

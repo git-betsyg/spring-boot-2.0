@@ -153,6 +153,17 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
+        <!-- WebSocket + STOMP（版本由 Spring Boot 2.7.6 BOM 管理，对应 Spring Framework 5.3.x） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!-- STOMP broker relay 连接 RabbitMQ 需要 Reactor Netty TCP 客户端 -->
+        <dependency>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
+        </dependency>
+
         <!-- Hutool 5.x：兼容 Java 8（6.x 需 Java 11+） -->
         <dependency>
             <groupId>cn.hutool</groupId>

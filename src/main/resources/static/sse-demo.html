@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE Demo</title>
+    <style>
+        body { font-family: sans-serif; max-width: 640px; margin: 2rem auto; }
+        input, button { margin: 0.25rem; }
+        #log { border: 1px solid #ccc; padding: 0.5rem; height: 240px; overflow-y: auto; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+<h2>Server-Sent Events 演示</h2>
+<p>订阅 <code>GET /sse/stream</code> · 推送 <code>POST /sse/push</code>（经 RabbitMQ Fanout 分布式广播）</p>
+<p>先 <code>POST /token</code>（Basic Auth）获取 Access Token，填入下方。</p>
+<input id="token" placeholder="Access Token（Bearer 后面的部分）" style="width: 90%">
+<br>
+<button id="connectBtn">连接</button>
+<button id="disconnectBtn" disabled>断开</button>
+<br>
+<input id="content" placeholder="消息" value="hello sse">
+<button id="pushBtn" disabled>REST 推送</button>
+<div id="log"></div>
+
+<script>
+    let abortController = null;
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+        logEl.textContent += msg + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    /** 解析 SSE 文本块（event / data 行） */
+    function handleSseBlock(block) {
+        if (!block.trim()) {
+            return;
+        }
+        let eventName = 'message';
+        let data = '';
+        block.split('\n').forEach(line => {
+            if (line.startsWith('event:')) {
+                eventName = line.slice(6).trim();
+            } else if (line.startsWith('data:')) {
+                data += (data ? '\n' : '') + line.slice(5).trim();
+            }
+        });
+        if (data) {
+            log('[' + eventName + '] ' + data);
+        }
+    }
+
+    async function connect(token) {
+        abortController = new AbortController();
+        const response = await fetch('/sse/stream', {
+            headers: { Authorization: 'Bearer ' + token },
+            signal: abortController.signal
+        });
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+                break;
+            }
+            buffer += decoder.decode(value, { stream: true });
+            const parts = buffer.split('\n\n');
+            buffer = parts.pop();
+            parts.forEach(handleSseBlock);
+        }
+    }
+
+    document.getElementById('connectBtn').onclick = async () => {
+        const token = document.getElementById('token').value.trim();
+        if (!token) {
+            log('请先填写 Access Token');
+            return;
+        }
+        try {
+            document.getElementById('connectBtn').disabled = true;
+            document.getElementById('disconnectBtn').disabled = false;
+            document.getElementById('pushBtn').disabled = false;
+            log('正在连接 SSE...');
+            await connect(token);
+            log('SSE 已结束');
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                log('连接失败: ' + err);
+            }
+        } finally {
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('disconnectBtn').disabled = true;
+            document.getElementById('pushBtn').disabled = true;
+        }
+    };
+
+    document.getElementById('disconnectBtn').onclick = () => {
+        if (abortController) {
+            abortController.abort();
+        }
+        log('已断开');
+    };
+
+    document.getElementById('pushBtn').onclick = () => {
+        const token = document.getElementById('token').value.trim();
+        const body = JSON.stringify({
+            from: 'sse-demo',
+            content: document.getElementById('content').value
+        });
+        fetch('/sse/push', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token
+            },
+            body
+        }).then(r => r.json()).then(vo => {
+            log('REST 推送: ' + JSON.stringify(vo.data || vo));
+        }).catch(err => log('推送失败: ' + err));
+    };
+</script>
+</body>
+</html>

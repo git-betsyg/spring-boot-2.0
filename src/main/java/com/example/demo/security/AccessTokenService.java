@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -25,19 +27,20 @@ public class AccessTokenService {
     private long accessTokenExpirySeconds;
 
     public String create(Authentication authentication) {
-        return create(authentication.getName(), authentication.getAuthorities().stream()
+        List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" ")));
+                .collect(Collectors.toList());
+        return create(authentication.getName(), roles);
     }
 
-    public String create(String username, String scope) {
+    public String create(String username, Collection<String> roles) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(accessTokenExpirySeconds))
                 .subject(username)
-                .claim("scope", scope)
+                .claim("roles", roles)
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }

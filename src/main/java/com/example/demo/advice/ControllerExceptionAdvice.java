@@ -3,13 +3,17 @@ package com.example.demo.advice;
 import cn.hutool.core.util.ObjectUtil;
 import com.example.demo.common.ResponseVo;
 import com.example.demo.enums.ExceptionCode;
+import com.example.demo.enums.SecurityExceptionCode;
 import com.example.demo.exception.APIException;
 import com.example.demo.service.I18nMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
@@ -36,6 +40,15 @@ public class ControllerExceptionAdvice {
         log.error(e.getMessage(), e);
         ObjectError objectError = e.getBindingResult().getAllErrors().get(0);
         return new ResponseVo(ExceptionCode.BINDEXCEPTION_ERROR.getErrorCode(), objectError.getDefaultMessage());
+    }
+
+    // 捕获权限不足异常（如 @PreAuthorize）
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseVo accessDeniedExceptionHandler(AccessDeniedException e) {
+        log.error(e.getMessage(), e);
+        String message = i18nMessageService.getMessage(SecurityExceptionCode.FORBIDDEN.getErrorMessage());
+        return new ResponseVo(SecurityExceptionCode.FORBIDDEN.getErrorCode(), message);
     }
 
     // 捕获API异常

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 640px; margin: 2rem auto; }
+        input, button { margin: 0.25rem; }
+        #log { border: 1px solid #ccc; padding: 0.5rem; height: 240px; overflow-y: auto; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+<h2>STOMP WebSocket 演示</h2>
+<p>端点：<code>/ws</code>（SockJS） · 发送 <code>/app/hello</code> · 订阅 <code>/topic/greetings</code></p>
+<p>先 <code>POST /token</code>（Basic Auth）获取 Access Token，填入下方。</p>
+<input id="token" placeholder="Access Token（Bearer 后面的部分）" style="width: 90%">
+<br>
+<button id="connectBtn">连接</button>
+<button id="disconnectBtn" disabled>断开</button>
+<br>
+<input id="content" placeholder="消息" value="world">
+<button id="sendBtn" disabled>发送</button>
+<button id="pushBtn" disabled>REST 推送</button>
+<div id="log"></div>
+
+<script>
+    let stompClient = null;
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+        logEl.textContent += msg + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    /** 解析 STOMP ERROR 帧里的 ResponseVo JSON（与 REST 格式相同） */
+    function formatStompError(err) {
+        const body = err && err.body;
+        if (body) {
+            try {
+                const vo = JSON.parse(body);
+                if (vo.errorCode != null) {
+                    return `[${vo.errorCode}] ${vo.errorMessage || ''}`.trim();
+                }
+            } catch (e) { /* 非 JSON 则走下方兜底 */ }
+        }
+        if (typeof err === 'string') {
+            return err;
+        }
+        if (err && err.headers) {
+            const code = err.headers.message;
+            if (code && /^\d+$/.test(code)) {
+                return `[${code}] 连接被拒绝（请检查 Token 是否有效）`;
+            }
+            if (code) {
+                return code;
+            }
+        }
+        return String(err);
+    }
+
+    document.getElementById('connectBtn').onclick = () => {
+        const token = document.getElementById('token').value.trim();
+        if (!token) {
+            log('请先填写 Access Token');
+            return;
+        }
+        const socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.debug = () => {};
+        stompClient.connect({ Authorization: 'Bearer ' + token }, () => {
+            log('已连接');
+            document.getElementById('connectBtn').disabled = true;
+            document.getElementById('disconnectBtn').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('pushBtn').disabled = false;
+            stompClient.subscribe('/topic/greetings', (frame) => {
+                log('收到: ' + frame.body);
+            });
+            stompClient.subscribe('/topic/notifications', (frame) => {
+                log('通知: ' + frame.body);
+            });
+        }, (err) => log('连接失败: ' + formatStompError(err)));
+    };
+
+    document.getElementById('disconnectBtn').onclick = () => {
+        if (stompClient) stompClient.disconnect();
+        log('已断开');
+        document.getElementById('connectBtn').disabled = false;
+        document.getElementById('disconnectBtn').disabled = true;
+        document.getElementById('sendBtn').disabled = true;
+        document.getElementById('pushBtn').disabled = true;
+    };
+
+    document.getElementById('sendBtn').onclick = () => {
+        const body = JSON.stringify({
+            content: document.getElementById('content').value
+        });
+        stompClient.send('/app/hello', {}, body);
+        log('已发送: ' + body);
+    };
+
+    document.getElementById('pushBtn').onclick = () => {
+        const token = document.getElementById('token').value.trim();
+        const body = JSON.stringify({
+            from: 'ws-demo',
+            content: document.getElementById('content').value
+        });
+        fetch('/ws/push', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token
+            },
+            body
+        }).then(r => r.json()).then(vo => {
+            log('REST 推送: ' + JSON.stringify(vo.data || vo));
+        }).catch(err => log('推送失败: ' + err));
+    };
+</script>
+</body>
+</html>

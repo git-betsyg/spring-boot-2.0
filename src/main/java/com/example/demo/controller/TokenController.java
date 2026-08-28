@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,11 +59,11 @@ public class TokenController {
         refreshTokenService.writeCookie(response, result.getRefreshToken());
 
         UserDetails user = userDetailsService.loadUserByUsername(result.getUsername());
-        String scope = user.getAuthorities().stream()
-                .map(Object::toString)
-                .reduce((a, b) -> a + " " + b)
-                .orElse("");
-        return buildTokenResponse(accessTokenService.create(result.getUsername(), scope));
+        return buildTokenResponse(accessTokenService.create(
+                result.getUsername(),
+                user.getAuthorities().stream()
+                        .map(Object::toString)
+                        .collect(Collectors.toList())));
     }
 
     /**

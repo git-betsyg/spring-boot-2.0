@@ -17,6 +17,8 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <lombok.version>1.18.30</lombok.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <!-- ElasticJob-Lite 3.0.3：与 Spring Boot 2.7.6（SnakeYAML 1.30）兼容；3.0.4 起要求 SnakeYAML 2.0 + Boot 2.7.10+ -->
+        <elasticjob.version>3.0.3</elasticjob.version>
     </properties>
     <repositories>
 		<repository>
@@ -175,6 +177,13 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>${hutool.version}</version>
+        </dependency>
+
+        <!-- ElasticJob-Lite：分布式定时调度（注册中心 ZooKeeper） -->
+        <dependency>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-spring-boot-starter</artifactId>
+            <version>${elasticjob.version}</version>
         </dependency>
     </dependencies>
     <dependencyManagement>

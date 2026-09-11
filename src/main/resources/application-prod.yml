@@ -42,6 +42,20 @@ spring:
     password: ${RABBITMQ_PASSWORD:guest}
     virtual-host: ${RABBITMQ_VHOST:/}
 
+elasticjob:
+  reg-center:
+    server-lists: ${ZK_SERVERS}
+    namespace: ${ELASTICJOB_NAMESPACE:demo-elasticjob}
+    connection-timeout-milliseconds: 30000
+    max-retries: 5
+    session-timeout-milliseconds: 60000
+  jobs:
+    demoSimpleJob:
+      elastic-job-class: com.example.demo.job.DemoSimpleJob
+      cron: ${ELASTICJOB_DEMO_CRON:0 0/5 * * * ?}
+      sharding-total-count: 1
+      overwrite: false
+
 logging:
   level:
     root: WARN                   # 全局 WARN，减少第三方框架噪音

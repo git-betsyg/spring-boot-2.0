@@ -39,6 +39,22 @@ spring:
     password: admin
     virtual-host: /
 
+# ElasticJob-Lite（需 ZooKeeper，与 MySQL 共用数据源做事件追踪）
+elasticjob:
+  reg-center:
+    server-lists: ${ZK_SERVERS:192.168.0.163:2181}
+    namespace: demo-elasticjob
+    connection-timeout-milliseconds: 30000
+    max-retries: 5
+    session-timeout-milliseconds: 60000
+  jobs:
+    demoSimpleJob:
+      elastic-job-class: com.example.demo.job.DemoSimpleJob
+      cron: 0 0/5 * * * ?
+      sharding-total-count: 1
+      overwrite: true
+      description: 演示简单定时任务，每 5 分钟执行一次
+
 # 日志配置
 logging:
   level:

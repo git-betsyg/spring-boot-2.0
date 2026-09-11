@@ -78,3 +78,9 @@ springdoc:
   swagger-ui:
     # 刷新页面后保留 Authorization 头，避免重复登录
     persist-authorization: true
+
+# ElasticJob-Lite 3.0.3（注册中心 ZooKeeper，作业配置存 ZK；执行记录持久化到 MySQL）
+elasticjob:
+  tracing:
+    # 主流做法：RDB 事件追踪，写入 JOB_EXECUTION_LOG / JOB_STATUS_TRACE_LOG
+    type: RDB

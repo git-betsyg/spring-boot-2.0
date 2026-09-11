@@ -44,6 +44,18 @@ public class RabbitMqConfig {
                 .with(RabbitMqConstants.ROUTING_KEY);
     }
 
+    @Bean
+    public Queue esArticleSyncQueue() {
+        return QueueBuilder.durable(RabbitMqConstants.ES_ARTICLE_SYNC_QUEUE).build();
+    }
+
+    @Bean
+    public Binding esArticleSyncBinding(Queue esArticleSyncQueue, DirectExchange demoExchange) {
+        return BindingBuilder.bind(esArticleSyncQueue)
+                .to(demoExchange)
+                .with(RabbitMqConstants.ES_ARTICLE_SYNC_ROUTING_KEY);
+    }
+
     /** WebSocket STOMP 广播镜像队列，启动时自动绑定 {@code amq.topic}，可在 Management UI 查看 */
     @Bean
     public TopicExchange stompTopicExchange() {

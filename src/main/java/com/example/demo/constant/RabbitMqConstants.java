@@ -11,6 +11,11 @@ public final class RabbitMqConstants {
 
     public static final String ROUTING_KEY = "demo.message";
 
+    /** 文章 MySQL → ES 异步同步队列 */
+    public static final String ES_ARTICLE_SYNC_QUEUE = "es.article.sync";
+
+    public static final String ES_ARTICLE_SYNC_ROUTING_KEY = "es.article.sync";
+
     /** RabbitMQ STOMP Relay：{@code /topic/greetings} 对应的 topic routing key（无 {@code /topic/} 前缀） */
     public static final String TOPIC_EXCHANGE = "amq.topic";
 

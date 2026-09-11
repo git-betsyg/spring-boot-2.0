@@ -36,6 +36,11 @@ spring:
     username: ${RABBITMQ_USERNAME:guest}
     password: ${RABBITMQ_PASSWORD:guest}
     virtual-host: ${RABBITMQ_VHOST:/}
+  elasticsearch:
+    # 多节点示例：uris: http://es1:9200,http://es2:9200,http://es3:9200
+    uris: ${ES_URIS:http://localhost:9200}
+    connection-timeout: 5s
+    socket-timeout: 30s
 
 elasticjob:
   reg-center:

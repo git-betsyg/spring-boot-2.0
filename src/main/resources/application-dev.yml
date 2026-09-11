@@ -38,6 +38,11 @@ spring:
     username: admin
     password: admin
     virtual-host: /
+  elasticsearch:
+    # 单节点写一台即可；集群时写多个节点地址，客户端自动做负载与故障转移
+    uris: http://${ES_HOST:192.168.0.163}:9200
+    connection-timeout: 5s
+    socket-timeout: 30s
 
 # ElasticJob-Lite（需 ZooKeeper，与 MySQL 共用数据源做事件追踪）
 elasticjob:

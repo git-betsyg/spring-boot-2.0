@@ -185,6 +185,12 @@
             <artifactId>elasticjob-lite-spring-boot-starter</artifactId>
             <version>${elasticjob.version}</version>
         </dependency>
+
+        <!-- Elasticsearch（版本由 Spring Boot 2.7.6 BOM 管理：ES 7.17.x + Spring Data Elasticsearch 4.4.x） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

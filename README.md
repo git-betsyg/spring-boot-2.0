@@ -1,0 +1,1 @@
+ELK，RPC，K8S（JWT），Jenkins流水线，dockerfile->UTC时间，远程断点调试，MetalLB ，普罗米修斯监控，k8s网关校验token，OpenFeign 微服务之间通信（涉及转换HTTP/2 +Protobuf 高性能通信）/注意这个也涉及网关校验，微服务之间通信时如果到达一种token即将过期的边界，那么可以在k8s的网关中做预检（比如token有效期只剩不到一分钟，就直接拦截让前端重新获取token）
